@@ -48,7 +48,7 @@ public class UploadUtils {
     private int uploadSize;
     private int failSize;
     private long totalSize;
-    private final MyHandler handler = new MyHandler(this);
+    private MyHandler handler = new MyHandler(this);
 
     private static class MyHandler extends Handler {
         private final WeakReference<UploadUtils> mUploadUtils;
@@ -384,5 +384,6 @@ public class UploadUtils {
     public void release() {
         //移除所有的callback和messages
         handler.removeCallbacksAndMessages(null);
+        handler = null;
     }
 }

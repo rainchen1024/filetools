@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements UploadUtils.OnUpl
         activityMainBinding.appCompatButton.setOnClickListener(view -> {
             UploadUtils uploadUtils = new UploadUtils(this);
             String fileSer = "http://ggejw.huaao24.com.cn/file/upload/files.do";
+            //测试前记得在外部存储中放一张1.jpg的图片（实在太赖了所以直接写死了）
             UploadFileInfo uploadFileInfo = new UploadFileInfo(Environment.getExternalStorageDirectory().getPath()+ File.separator+"1.jpg");
             Log.d("uploadUtils","========开始上传============");
             uploadUtils.uploadFilesByOkHttp(uploadFileInfo,fileSer);
