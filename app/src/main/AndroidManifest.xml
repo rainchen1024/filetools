@@ -16,6 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".download.SingleActivity"/>
+        <activity android:name=".download.QueueActivity"/>
+        <activity android:name=".download.EachBlockProgressActivity"/>
+        <activity android:name=".download.ManagerActivity"/>
+        <activity android:name=".download.comprehensive.ComprehensiveActivity"/>
+        <activity android:name=".download.BunchActivity"/>
+        <activity android:name=".download.ContentUriActivity"/>
+        <activity android:name=".download.NotificationActivity"/>
+        <activity android:name=".download.DownloadMainActivity"/>
     </application>
 
 </manifest>

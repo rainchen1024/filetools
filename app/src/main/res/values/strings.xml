@@ -1,3 +1,58 @@
 <resources>
     <string name="app_name">File tools</string>
+    <string name="github_url">https://github.com/rainchen1024/filetools</string>
+    <string name="title_single">Single</string>
+    <string name="title_multiple">Multiple</string>
+    <string name="title_queue">Queue</string>
+    <string name="title_content_uri">Content Uri</string>
+    <string name="title_notification">Notification</string>
+    <string name="start_download">Start Download</string>
+    <string name="cancel_download">Cancel download</string>
+    <string name="start_same_task">Start Same Task</string>
+    <string name="start_same_file_task">Start Same File Task</string>
+    <string name="block_title">Block%1$d(%2$s~%3$s)</string>
+    <string name="task_title">Task(0~%1$s)</string>
+    <string name="get_status">Get Status</string>
+    <string name="github">GITHUB</string>
+    <string name="start">START</string>
+    <string name="cancel">CANCEL</string>
+    <string name="parallel">Parallel</string>
+    <string name="serial">Serial</string>
+    <string name="priority">Priority(%1$d)</string>
+    <string name="state_idle">IDLE</string>
+    <string name="state_pending">PENDING</string>
+    <string name="state_unknown">UNKNOWN</string>
+    <string name="state_running">RUNNING</string>
+
+    <!-- entry list -->
+    <string name="single_download_title">单一下载</string>
+    <string name="single_download_desc">在这个演示中，您可以看到下载任务的最简单方法。</string>
+    <string name="each_block_progress_title">显示每个块的进度</string>
+    <string name="each_block_progress_desc">在这个演示中，我们将下载一个任务并显示每个块的进度。</string>
+    <string name="queue_download_title">队列下载</string>
+    <string name="queue_download_desc">在这个演示中，您将看到如何将批量任务作为队列下载并以不同优先级下载。</string>
+    <string name="task_manager_title">任务管理器</string>
+    <string name="task_manager_desc">在这个演示中，我们将使用UnifiedListenerManager来管理所有任务，并且您可以随时在任何地方为任务添加监听器。</string>
+    <string name="content_uri_desc">在这个演示中，我们将使用Content Uri来存储任务的数据，而不是使用可访问的文件路径。</string>
+    <string name="notification_desc">在这个演示中，我们将向您展示使用okdownload通知的简单情况。</string>
+    <string name="comprehensive_case_title">综合案例</string>
+    <string name="comprehensive_case_desc">在这个演示中，您可以看到一个全面的演示，其中几个选项卡在页面之间切换</string>
+    <string name="bunch_download_title">串行或并行下载</string>
+    <string name="bunch_download_desc">在这个演示中，我们将用串行或并行下载数个文件和显示过程的任务。</string>
+
+    <!-- listener -->
+    <string name="info_ready">Info Ready</string>
+    <string name="task_start">Task Start</string>
+    <string name="connect_trial_start">Connect Trial Start</string>
+    <string name="connect_trial_end">Connect Trial End</string>
+    <string name="download_from_beginning">Download from Beginning</string>
+    <string name="download_from_breakpoint">Download from Breakpoint</string>
+    <string name="connect_start">Connect Start</string>
+    <string name="connect_end">Connect End</string>
+    <string name="fetch_start">Fetch Start</string>
+    <string name="fetch_progress">Fetch Progress</string>
+    <string name="fetch_end">Fetch End</string>
+    <string name="delete_files">DELETE FILES</string>
+
+    <string name="choose_file">Choose File...</string>
 </resources>

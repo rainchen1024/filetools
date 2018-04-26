@@ -418,7 +418,9 @@ public class ImageUtils {
 
     //压缩图片并保存在newpath路径中，返回newpath
     public static String compressFile(String oldPath, String newPath, int size) {
-        if (size < 50) size = 50;
+        if (size < 50) {
+            size = 50;
+        }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
         Bitmap bitmap = BitmapFactory.decodeFile(oldPath,

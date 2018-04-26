@@ -14,6 +14,7 @@ import com.rainchen.filetools.upload.helper.ProgressHelper;
 import com.rainchen.filetools.upload.listener.ProgressListener;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -92,15 +93,15 @@ public class UploadUtils {
     public UploadUtils(OnUploadListener mOnUploadListener) {
         this.mOnUploadListener = mOnUploadListener;
     }
-/**
- * @param fileInfo 单文件信息
- *                 @param uploadUrl 文件服务器地址
- *
- * */
+
+    /**
+     * @param fileInfo  单文件信息
+     * @param uploadUrl 文件服务器地址
+     */
     public void uploadFilesByOkHttp(UploadFileInfo fileInfo, String uploadUrl) {
         List<UploadFileInfo> fileInfos = new ArrayList<>();
         fileInfos.add(fileInfo);
-        uploadFilesByOkHttp(fileInfos,uploadUrl);
+        uploadFilesByOkHttp(fileInfos, uploadUrl);
     }
 
     //图片压缩
@@ -125,7 +126,7 @@ public class UploadUtils {
      *                   <p>
      *                   <p>
      *                   非阿里云oss  基于okhttp3实现
-     *                   默认压缩200k（单个文件)
+     *                   默认压缩到200k（单个文件)
      */
     public void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
         uploadFilesByOkHttp(totalList, uploadUrl, isCompress, 200);
@@ -145,6 +146,7 @@ public class UploadUtils {
     public void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress, int maxSize) {
         //统计下载的个数
         uploadSize = 0;
+        failSize = 0;
         if (totalList == null || totalList.size() == 0) {
             throw new NullPointerException("totalList not null and totalList.size()!=0");
         } else {
@@ -208,7 +210,7 @@ public class UploadUtils {
             handler.obtainMessage(UPLOAD_SUCCESS, totalList).sendToTarget();
             return;
         } else if (failSize > 0) {
-            handler.obtainMessage(UPLOAD_FAILED,new Exception("upload failed")).sendToTarget();
+            handler.obtainMessage(UPLOAD_FAILED, new Exception("upload failed")).sendToTarget();
             return;
         }
 
@@ -229,7 +231,7 @@ public class UploadUtils {
             @Override
             public void onFailure(@Nullable Call call, @NonNull IOException e) {
                 Log.d("UploadUtils", e.getMessage());
-                handler.obtainMessage(UPLOAD_FAILED,e).sendToTarget();
+                handler.obtainMessage(UPLOAD_FAILED, e).sendToTarget();
             }
 
             @Override
@@ -241,40 +243,59 @@ public class UploadUtils {
                     JSONArray data = jsonObject.optJSONArray("data");
                     if (data != null && data.length() > 0) {
                         for (int i = 0; i < data.length(); i++) {
-                            JSONObject object = data.getJSONObject(i);
-                            UploadFileInfo uploadFileInfo = totalList.get(i);
-                            String path = uploadFileInfo.getPath();
-                            String fileName = FileUtils.getFileName(path);
-                            String substring = fileName.substring(0, fileName.indexOf("."));
-                            if (object.has(substring)) {
-                                String s = object.optString(substring);
-                                String url = s.replace("\\/", File.separator);
-                                //2017.3.10修改为返回相对路径（cy）
-//                                    uploadFileInfo.setUploadUrl(HttpRequestUtils.DOWNLOAD_HOST + url);
-                                uploadFileInfo.setUploadUrl(url);
+                            String substring = updateFileInfo(data, i, totalList);
+                            delTempFile(i, substring, tempPathArr, isCompress);
+                            if (TextUtils.isEmpty(substring)) {
+                                failSize++;
+                            } else {
+                                ++uploadSize;
                             }
-                            if (!TextUtils.isEmpty(tempPathArr[i]) && !TextUtils.isEmpty(substring)) {
-                                String tempFileName = FileUtils.getFileName(tempPathArr[i]);
-                                String tempName = tempFileName.substring(0, tempFileName.indexOf("."));
-                                if (substring.equals(tempName) && isCompress) {//删除上传产生的临时文件
-                                    new File(tempPathArr[i]).delete();
-                                }
-                            }
-                            ++uploadSize;
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    handler.obtainMessage(UPLOAD_FAILED,e).sendToTarget();
+                    handler.obtainMessage(UPLOAD_FAILED, e).sendToTarget();
                 }
                 if (uploadSize == size) {
                     handler.obtainMessage(UPLOAD_SUCCESS, totalList).sendToTarget();
                 } else {
-                    handler.obtainMessage(UPLOAD_FAILED,new Exception("upload failed")).sendToTarget();
+                    handler.obtainMessage(UPLOAD_FAILED, new Exception("upload failed")).sendToTarget();
                 }
             }
 
         });
+    }
+
+    /**
+     * 封装返回的文件信息
+     */
+    private String updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalList) throws JSONException {
+        JSONObject object = data.getJSONObject(i);
+        UploadFileInfo uploadFileInfo = totalList.get(i);
+        String path = uploadFileInfo.getPath();
+        String fileName = FileUtils.getFileName(path);
+        String substring = fileName.substring(0, fileName.indexOf("."));
+        if (object.has(substring)) {
+            String s = object.optString(substring);
+            String url = s.replace("\\/", File.separator);
+            //2017.3.10修改为返回相对路径（cy）
+//                                    uploadFileInfo.setUploadUrl(HttpRequestUtils.DOWNLOAD_HOST + url);
+            uploadFileInfo.setUploadUrl(url);
+        }
+        return substring;
+    }
+
+    /**
+     * 删除压缩临时产生的文件
+     */
+    private void delTempFile(int i, String substring, String[] tempPathArr, boolean isCompress) {
+        if (!TextUtils.isEmpty(tempPathArr[i]) && !TextUtils.isEmpty(substring)) {
+            String tempFileName = FileUtils.getFileName(tempPathArr[i]);
+            String tempName = tempFileName.substring(0, tempFileName.indexOf("."));
+            if (substring.equals(tempName) && isCompress) {//删除上传产生的临时文件
+                new File(tempPathArr[i]).delete();
+            }
+        }
     }
 
     public static String getProcessString(String formatString, long currentSize, long totalSize) {

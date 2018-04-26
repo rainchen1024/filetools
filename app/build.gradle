@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
@@ -10,9 +12,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    dataBinding{
-        enabled = true
-    }
+//    dataBinding{
+//        enabled = true
+//    }
     buildTypes {
         release {
             minifyEnabled false
@@ -27,12 +29,48 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+//    implementation 'com.android.support:appcompat-v7:27.1.1'
+//    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //文件工具类
-    //    implementation 'com.github.rainchen1024:filetools:v1.0.0'
-    implementation project(':filetools')
+//    implementation 'com.github.rainchen1024:filetools:v1.0.0'
+        implementation project(':filetools')
+//    implementation 'com.android.support:design:27.1.1'
+//    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation project(':okdownload')
+    implementation dep.kotlin
+    //noinspection GradleDependency source code is not available on 26
+    implementation dep.supportDesign
+    //noinspection GradleDependency source code is not available on 26
+    implementation dep.supportV7
+    // Appcompat-v7 (only Anko Commons)
+    implementation dep.ankoSdk
+    implementation dep.ankoV7Commons
+    // Appcompat-v7 (Anko Layouts)
+    implementation dep.ankoV7
+    implementation dep.ankoSdk25Coroutines
+    implementation dep.ankoCoroutines
+    // CardView-v7
+    implementation dep.ankoCardviewV7
+    //noinspection GradleDependency
+    implementation dep.supportCardview
+    // Design
+    implementation dep.ankoDesign
+    implementation dep.ankoDesignCoroutines
+    // RecyclerView-v7
+    implementation dep.ankoRecyclerviewV7
+    implementation dep.ankoRecyclerviewV7Coroutines
+    implementation dep.kotlinxCoroutines
+    implementation dep.supportConstraintLayout
+    testImplementation dep.junit
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
