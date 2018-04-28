@@ -29,22 +29,21 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-//    implementation 'com.android.support:appcompat-v7:27.1.1'
-//    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    //    implementation 'com.android.support:appcompat-v7:27.1.1'
+    //    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //文件工具类
-//    implementation 'com.github.rainchen1024:filetools:v1.0.0'
-        implementation project(':filetools')
-//    implementation 'com.android.support:design:27.1.1'
-//    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    //    implementation 'com.github.rainchen1024:filetools:v1.0.0'
+    implementation project(':filetools')
+    //    implementation 'com.android.support:design:27.1.1'
+    //    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation project(':okdownload')
     implementation dep.kotlin
     //noinspection GradleDependency source code is not available on 26
     implementation dep.supportDesign
     //noinspection GradleDependency source code is not available on 26
-    implementation dep.supportV7
     // Appcompat-v7 (only Anko Commons)
     implementation dep.ankoSdk
     implementation dep.ankoV7Commons

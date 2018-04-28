@@ -1,9 +1,10 @@
 package com.rainchen.filetools.utils;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -12,6 +13,8 @@ import android.util.Log;
 import com.rainchen.filetools.bean.UploadFileInfo;
 import com.rainchen.filetools.upload.helper.ProgressHelper;
 import com.rainchen.filetools.upload.listener.ProgressListener;
+import com.rainchen.filetools.utils.compress.ImgCompress;
+import com.rainchen.filetools.utils.compress.OnCompressListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +53,7 @@ public class UploadUtils {
     private int failSize;
     private long totalSize;
     private MyHandler handler = new MyHandler(this);
+    private Context mContext;
 
     private static class MyHandler extends Handler {
         private final WeakReference<UploadUtils> mUploadUtils;
@@ -72,11 +76,13 @@ public class UploadUtils {
             case UPLOAD_SUCCESS:
                 List<UploadFileInfo> totalList = (List<UploadFileInfo>) msg.obj;
                 mOnUploadListener.onUploadSuccess(totalList);
+//                delTempFile();
                 break;
 
             case UPLOAD_FAILED:
                 Exception e = (Exception) msg.obj;
                 mOnUploadListener.onUploadFail(e);
+                delTempFile();
                 break;
 
             case UPLOAD_PROCESS:
@@ -159,12 +165,12 @@ public class UploadUtils {
 
     /**
      * @param uploadUrl  uploadUrl上传服务器的地址
-     * @param totalList  本地文件信息封装
+     * @param arr  本地文件信息封装
      * @param isCompress 是否启用压缩默认不启用（false）
      * @param maxSize    单个文件的最大占用存储空间
      */
-    private synchronized void uploadAndCompressByOkhttp(int type, final List<UploadFileInfo> totalList, String uploadUrl, final boolean isCompress, int maxSize) {
-        final int size = totalList.size();
+    private synchronized void uploadAndCompressByOkhttp(int type, final List<UploadFileInfo> arr, String uploadUrl, final boolean isCompress, int maxSize) {
+        final int size = arr.size();
         OkHttpClient client = new OkHttpClient.Builder()
                 //设置超时，不设置可能会报异常
                 .connectTimeout(5000, TimeUnit.MILLISECONDS).readTimeout(10000, TimeUnit
@@ -172,7 +178,14 @@ public class UploadUtils {
         //构造上传请求，类似web表单
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody
                 .FORM).addFormDataPart("os", "android");
-        final String[] tempPathArr = new String[size];
+//        final String[] tempPathArr = new String[size];
+        final List<UploadFileInfo> totalList;
+        //是否压缩
+        if (isCompress) {
+            totalList = compress(arr);
+        }else {
+            totalList = arr;
+        }
         /*
          * 表单封装
          * 以文件名字作为key（file.getName()）
@@ -182,20 +195,10 @@ public class UploadUtils {
             File file;
             UploadFileInfo uploadFileInfo = totalList.get(i);
             String path = uploadFileInfo.getPath();
-            String url = uploadFileInfo.getUploadUrl();
-            String tempPath;
-            String uploadPicPath;
+            String url = uploadFileInfo.getUrl();
             //兼容修改页面的上传（只要UploadFileInfo里的path不为空的话就代表是修改后上传的）
             if (!TextUtils.isEmpty(path)) {
-                if (isCompress) {//是否启用压缩
-                    tempPath = path.substring(0, path.lastIndexOf("/") + 1) + "temp" + SystemClock.currentThreadTimeMillis() + ".jpg";
-                    uploadPicPath = fileCompress(path, tempPath, maxSize);
-                    tempPathArr[i] = tempPath;
-                } else {
-                    uploadPicPath = path;
-                    tempPathArr[i] = path;
-                }
-                file = new File(uploadPicPath);
+                file = new File(path);
             } else if (!TextUtils.isEmpty(url)) {
                 ++uploadSize;
                 continue;
@@ -243,13 +246,7 @@ public class UploadUtils {
                     JSONArray data = jsonObject.optJSONArray("data");
                     if (data != null && data.length() > 0) {
                         for (int i = 0; i < data.length(); i++) {
-                            String substring = updateFileInfo(data, i, totalList);
-                            delTempFile(i, substring, tempPathArr, isCompress);
-                            if (TextUtils.isEmpty(substring)) {
-                                failSize++;
-                            } else {
-                                ++uploadSize;
-                            }
+                            updateFileInfo(data, i, totalList);
                         }
                     }
                 } catch (Exception e) {
@@ -269,7 +266,7 @@ public class UploadUtils {
     /**
      * 封装返回的文件信息
      */
-    private String updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalList) throws JSONException {
+    private void updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalList) throws JSONException {
         JSONObject object = data.getJSONObject(i);
         UploadFileInfo uploadFileInfo = totalList.get(i);
         String path = uploadFileInfo.getPath();
@@ -280,21 +277,26 @@ public class UploadUtils {
             String url = s.replace("\\/", File.separator);
             //2017.3.10修改为返回相对路径（cy）
 //                                    uploadFileInfo.setUploadUrl(HttpRequestUtils.DOWNLOAD_HOST + url);
-            uploadFileInfo.setUploadUrl(url);
+            uploadFileInfo.setUrl(url);
+            uploadSize++;
         }
-        return substring;
     }
 
     /**
      * 删除压缩临时产生的文件
+     *
      */
-    private void delTempFile(int i, String substring, String[] tempPathArr, boolean isCompress) {
-        if (!TextUtils.isEmpty(tempPathArr[i]) && !TextUtils.isEmpty(substring)) {
-            String tempFileName = FileUtils.getFileName(tempPathArr[i]);
-            String tempName = tempFileName.substring(0, tempFileName.indexOf("."));
-            if (substring.equals(tempName) && isCompress) {//删除上传产生的临时文件
-                new File(tempPathArr[i]).delete();
+    private void delTempFile() {
+        File file = new File(getPath());
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                File f = files[i];
+                f.delete();
             }
+            file.delete();//如要保留文件夹，只删除文件，请注释这行
+        } else if (file.exists()) {
+            file.delete();
         }
     }
 
@@ -330,6 +332,61 @@ public class UploadUtils {
         percentFormat.setMinimumFractionDigits(0); //最小小数位数
         percentFormat.setMinimumIntegerDigits(1);//最小整数位数
         return percentFormat.format(d);//自动转换成百分比显示
+    }
+
+    /**
+     * 图片压缩
+     */
+    private List<UploadFileInfo> compress(final List<UploadFileInfo> fileInfos) {
+        List<UploadFileInfo> temp = new ArrayList<>();
+        for (UploadFileInfo fileInfo : fileInfos) {
+            if (!TextUtils.isEmpty(fileInfo.getPath())) {
+                temp.add(fileInfo);
+            }
+        }
+        ImgCompress.with(mContext)
+                .load(temp)
+                .ignoreBy(200)
+                .setTargetDir(getPath())//context.getCacheDir().getPath()+"/temp/img/"
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        for (int i = 0; i < fileInfos.size(); i++) {
+                            //压缩后的文件
+                            String path1 = file.getPath();
+                            String name1 = path1.substring(path1.lastIndexOf(File.separator) + 1);
+                            //源文件
+                            UploadFileInfo uploadFileInfo = fileInfos.get(i);
+                            String path2 = uploadFileInfo.getPath();
+                            String name2 = path2.substring(path2.lastIndexOf(File.separator) + 1);
+                            if (name1.equals(name2)) {
+                                uploadFileInfo.setPath(path1);
+                                uploadFileInfo.setCompress(true);
+                            }
+                            Log.d("compress",path1+"======"+path2);
+                        }
+                    }
+
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+                }).launchOnUiThread();
+        return fileInfos;
+    }
+
+//临时文件夹
+    private String getPath() {
+        String path = Environment.getExternalStorageDirectory() + "/temp/image/";
+        File file = new File(path);
+        if (file.mkdirs()) {
+            return path;
+        }
+        return path;
     }
 
     private class MyAsyncTask extends AsyncTask {

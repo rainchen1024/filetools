@@ -14,6 +14,7 @@ import com.rainchen.filetools.utils.UploadUtils;
 import com.rainchen.filetoolstest.download.DownloadMainActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements UploadUtils.OnUploadListener {
@@ -36,34 +37,38 @@ public class MainActivity extends AppCompatActivity implements UploadUtils.OnUpl
             UploadUtils uploadUtils = new UploadUtils(this);
             String fileSer = "http://ggejw.huaao24.com.cn/file/upload/files.do";
             //测试前记得在外部存储中放一张1.jpg的图片（实在太赖了所以直接写死了）
-            UploadFileInfo uploadFileInfo = new UploadFileInfo(Environment.getExternalStorageDirectory().getPath()+ File.separator+"1.jpg");
-            Log.d("uploadUtils","========开始上传============");
-            uploadUtils.uploadFilesByOkHttp(uploadFileInfo,fileSer);
+            List<UploadFileInfo> fileInfos = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                UploadFileInfo uploadFileInfo = new UploadFileInfo(Environment.getExternalStorageDirectory().getPath() + File.separator + "1.jpg");
+                fileInfos.add(uploadFileInfo);
+            }
+            Log.d("uploadUtils", "========开始上传============");
+            uploadUtils.uploadFilesByOkHttp(fileInfos, fileSer,true);
 
         });
-        findViewById(R.id.button1).setOnClickListener(v->{
+        findViewById(R.id.button1).setOnClickListener(v -> {
             startActivity(new Intent(this, DownloadMainActivity.class));
         });
     }
 
     @Override
     public void onUploadSuccess(List<UploadFileInfo> totalList) {
-        Log.d("onUploadSuccess",totalList.toString());
-        Toast.makeText(this,"上传成功",Toast.LENGTH_SHORT).show();
+        Log.d("onUploadSuccess", totalList.toString());
+        Toast.makeText(this, "上传成功", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onUploadFail(Exception e) {
-        Log.d("onUploadFail",e.getMessage());
-        Toast.makeText(this,"上传失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+        Log.d("onUploadFail", e.getMessage());
+        Toast.makeText(this, "上传失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onUploadProcess(long currentSize, long totalSize) {
-        Log.d("onUploadProcess","==="+currentSize+"======="+totalSize+"===");
+        Log.d("onUploadProcess", "===" + currentSize + "=======" + totalSize + "===");
         bunchProgressBar.setMax((int) totalSize);
         bunchProgressBar.setProgress((int) currentSize);
-        text.setText(currentSize+"/"+totalSize);
+        text.setText(currentSize + "/" + totalSize);
     }
 
 }
