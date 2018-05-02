@@ -2,13 +2,9 @@
 
 A Reliable, Flexible, Fast and Powerful download engine.
 
-![][okdownload_svg]
-[![][build_status_svg]][build_status_link]
-[![codecov](https://codecov.io/gh/lingochamp/okdownload/branch/master/graph/badge.svg)](https://codecov.io/gh/lingochamp/okdownload)
-[ ![Download](https://api.bintray.com/packages/jacksgong/maven/OkDownload/images/download.svg) ](https://bintray.com/jacksgong/maven/OkDownload/_latestVersion)
-[![][okdownload_snapshot_svg]](https://oss.sonatype.org/content/repositories/snapshots/com/liulishuo/okdownload/)
 
-> [中文文档](https://github.com/rainchen1024/okdownload-zh.md)
+
+> [中文文档](https://github.com/rainchen1024/filetools/blob/dev/okdownload-zh.md)
 
 ---
 

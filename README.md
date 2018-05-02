@@ -2,18 +2,22 @@
     这是一个文件操作工具类
 
 ## 一、android集成步骤
-1. 在project下的build.gradle中添加<br/>
-      allprojects {<br/>
-        repositories {<br/>
-         ...<br/>
-         maven { url 'https://jitpack.io' }<br/>
-        }<br/>
-      }<br/>
+1. 在project下的build.gradle中添加
+```java
+  allprojects {
+    repositories {
+     ...
+     maven { url 'https://jitpack.io' }
+    }
+  }
+```
 2. 在app下的build.gradle中添加<br/>
-    dependencies {<br/>
-          ...<br/>
-	        compile 'com.github.rainchen1024:filetools:v1.0.0'<br/>
-	}<br/>
+```java
+dependencies {
+      ...
+        compile 'com.github.rainchen1024:filetools:v1.0.0'<br/>
+}
+```
 ## 二、开发
 **a.文件上传**
 <br/>
