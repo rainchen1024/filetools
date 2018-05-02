@@ -42,7 +42,7 @@
 <br/>
 <br/>
 **b.文件下载功能使用**<br/>
-[文件下载功能详情请移步这里](https://github.com/rainchen1024/okdownload.md) 
+[文件下载功能详情请移步这里](https://github.com/rainchen1024/filetools/blob/dev/okdownload-zh.md) 
 <br/><br/>
 **c.图片压缩功能使用**<br/>
 
@@ -98,25 +98,24 @@ Flowable.just(photos)
 	builder.addFormDataPart("name" + i, file.getName(), RequestBody.create(null, file));
 <br/>
 2. 服务端返回给你数据时一定要将你传的文件名作为key值 
-<br/>
-<!--lang:java-->
-	 private void updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalList) throws JSONException {
-	        JSONObject object = data.getJSONObject(i);
-	        UploadFileInfo uploadFileInfo = totalList.get(i);
-	        String path = uploadFileInfo.getPath();
-	        String fileName = FileUtils.getFileName(path);
-	        String substring = fileName.substring(0, fileName.indexOf("."));
-	        if (object.has(substring)) {
-	            String s = object.optString(substring);
-	            String url = s.replace("\\/", File.separator);
-	            //2017.3.10修改为返回相对路径（cy）
-	//                                    uploadFileInfo.setUploadUrl(HttpRequestUtils.DOWNLOAD_HOST + url);
-	            uploadFileInfo.setUrl(url);
-	            uploadSize++;
-	        }
-	    }
-<br/>
----
+
+```java
+private void updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalList) throws JSONException {
+        JSONObject object = data.getJSONObject(i);
+        UploadFileInfo uploadFileInfo = totalList.get(i);
+        String path = uploadFileInfo.getPath();
+        String fileName = FileUtils.getFileName(path);
+        String substring = fileName.substring(0, fileName.indexOf("."));
+        if (object.has(substring)) {
+            String s = object.optString(substring);
+            String url = s.replace("\\/", File.separator);
+            //2017.3.10修改为返回相对路径（cy）
+//                                    uploadFileInfo.setUploadUrl(HttpRequestUtils.DOWNLOAD_HOST + url);
+            uploadFileInfo.setUrl(url);
+            uploadSize++;
+        }
+}
+```
 
 
 
