@@ -55,7 +55,7 @@ dependencies {
 `Luban`内部采用`IO`线程进行图片压缩，外部调用只需设置好结果监听即可：
 
 ```java
-Luban.with(this)
+ImgCompress.with(this)
         .load(photos)                                   // 传人要压缩的图片列表
         .ignoreBy(100)                                  // 忽略不压缩图片的大小
         .setTargetDir(getPath())                        // 设置压缩后文件存储位置
@@ -74,7 +74,7 @@ Luban.with(this)
           public void onError(Throwable e) {
             // TODO 当压缩过程出现问题时调用
           }
-        }).launch();    //启动压缩
+        }).launchOnUiThread();    //启动压缩
 ```
 
 ### 同步调用
@@ -87,7 +87,7 @@ Flowable.just(photos)
     .map(new Function<List<String>, List<File>>() {
       @Override public List<File> apply(@NonNull List<String> list) throws Exception {
         // 同步方法直接返回压缩后的文件
-        return Luban.with(MainActivity.this).load(list).get();
+        return ImgCompress.with(MainActivity.this).load(list).get();
       }
     })
     .observeOn(AndroidSchedulers.mainThread())
