@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements UploadUtils.OnUpl
             String fileSer = "http://ggejw.huaao24.com.cn/file/upload/files.do";
             //测试前记得在外部存储中放一张1.jpg的图片（实在太赖了所以直接写死了）
             List<UploadFileInfo> fileInfos = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 5; i++) {
                 UploadFileInfo uploadFileInfo = new UploadFileInfo(Environment.getExternalStorageDirectory().getPath() + File.separator + "1.jpg");
                 fileInfos.add(uploadFileInfo);
             }

@@ -192,17 +192,24 @@ public class ImgCompress implements Handler.Callback {
 
     @Override
     public boolean handleMessage(Message msg) {
-        if (mCompressListener == null) return false;
+        if (mCompressListener == null) {
+            return false;
+        }
 
         switch (msg.what) {
             case MSG_COMPRESS_START:
+                Log.d("onStart","===== onStart =====");
                 mCompressListener.onStart();
                 break;
             case MSG_COMPRESS_SUCCESS:
-                mCompressListener.onSuccess((File)msg.obj);
+                File file = (File) msg.obj;
+                Log.d("onStart","===== onSuccess =="+(file.isFile()?file.getPath():"file is null"));
+                mCompressListener.onSuccess(file);
                 break;
             case MSG_COMPRESS_ERROR:
-                mCompressListener.onError((Throwable) msg.obj);
+                Exception e = (Exception) msg.obj;
+                Log.d("onStart","===== onError ====="+e.getMessage());
+                mCompressListener.onError(e);
                 break;
                 default:break;
         }
@@ -246,6 +253,7 @@ public class ImgCompress implements Handler.Callback {
         }
 
         public Builder load(final String path) {
+            Log.d("load-path",path);
             mStreamProviders.add(new InputStreamProvider() {
                 @Override
                 public InputStream open() throws IOException {
