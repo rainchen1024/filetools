@@ -121,6 +121,8 @@ private void updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalLis
 }
 ```
 
-
+灵感来源于 <br/>
+[鲁班压缩](https://github.com/Curzibn/Luban)<br/>
+[okdownload](https://github.com/lingochamp/okdownload)
 
 [更过文章](https://rainchen1024.github.io)

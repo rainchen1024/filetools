@@ -25,6 +25,7 @@
         <activity android:name=".download.ContentUriActivity"/>
         <activity android:name=".download.NotificationActivity"/>
         <activity android:name=".download.DownloadMainActivity"/>
+        <activity android:name=".UploadActivity"/>
     </application>
 
 </manifest>

@@ -2,7 +2,6 @@ package com.rainchen.filetools.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -96,7 +95,8 @@ public class UploadUtils {
     }
 
 
-    public UploadUtils(OnUploadListener mOnUploadListener) {
+    public UploadUtils(Context context,OnUploadListener mOnUploadListener) {
+        this.mContext = context;
         this.mOnUploadListener = mOnUploadListener;
     }
 
@@ -110,10 +110,17 @@ public class UploadUtils {
         uploadFilesByOkHttp(fileInfos, uploadUrl);
     }
 
-    //图片压缩
-    private String fileCompress(String picPath, String newPath, int maxSize) {
-        return ImageUtils.compressFile(picPath, newPath, maxSize);
+    /**
+     * @param fileInfo   单文件信息
+     * @param uploadUrl  文件服务器地址
+     * @param isCompress 是否压缩
+     */
+    public void uploadFilesByOkHttp(UploadFileInfo fileInfo, String uploadUrl, boolean isCompress) {
+        List<UploadFileInfo> fileInfos = new ArrayList<>();
+        fileInfos.add(fileInfo);
+        uploadFilesByOkHttp(fileInfos, uploadUrl, isCompress);
     }
+
 
     /**
      * @param totalList 本地文件信息封装
@@ -121,42 +128,29 @@ public class UploadUtils {
      *                  非阿里云oss  基于okhttp3实现
      *                  不压缩
      */
-    public void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl) {
+    private void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl) {
         uploadFilesByOkHttp(totalList, uploadUrl, false);
     }
 
-    /**
-     * @param uploadUrl  uploadUrl上传服务器的地址
-     * @param totalList  本地文件信息封装
-     * @param isCompress 是否启用压缩默认不启用（false）
-     *                   <p>
-     *                   <p>
-     *                   非阿里云oss  基于okhttp3实现
-     *                   默认压缩到200k（单个文件)
-     */
-    public void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
-        uploadFilesByOkHttp(totalList, uploadUrl, isCompress, 200);
-    }
 
     /**
      * @param uploadUrl  uploadUrl上传服务器的地址
      * @param totalList  本地文件信息封装
      * @param isCompress 是否启用压缩默认不启用（false）
-     * @param maxSize    单个文件的最大占用存储空间
      *                   <p>
      *                   <p>
      *                   <p>
      *                   非阿里云oss  基于okhttp3实现
      *                   自定义压缩单个文件大小
      */
-    public void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress, int maxSize) {
+    private void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
         //统计下载的个数
         uploadSize = 0;
         failSize = 0;
         if (totalList == null || totalList.size() == 0) {
             throw new NullPointerException("totalList not null and totalList.size()!=0");
         } else {
-            MyAsyncTask myAsyncTask = new MyAsyncTask(OKHTTP_TYPE, totalList, uploadUrl, isCompress, maxSize);
+            MyAsyncTask myAsyncTask = new MyAsyncTask(OKHTTP_TYPE, totalList, uploadUrl, isCompress);
             myAsyncTask.execute();
 
         }
@@ -165,11 +159,10 @@ public class UploadUtils {
 
     /**
      * @param uploadUrl  uploadUrl上传服务器的地址
-     * @param arr  本地文件信息封装
+     * @param arr        本地文件信息封装
      * @param isCompress 是否启用压缩默认不启用（false）
-     * @param maxSize    单个文件的最大占用存储空间
      */
-    private synchronized void uploadAndCompressByOkhttp(int type, final List<UploadFileInfo> arr, String uploadUrl, final boolean isCompress, int maxSize) {
+    private synchronized void uploadAndCompressByOkhttp(int type, final List<UploadFileInfo> arr, String uploadUrl, final boolean isCompress) {
         final int size = arr.size();
         OkHttpClient client = new OkHttpClient.Builder()
                 //设置超时，不设置可能会报异常
@@ -183,7 +176,7 @@ public class UploadUtils {
         //是否压缩
         if (isCompress) {
             totalList = compress(arr);
-        }else {
+        } else {
             totalList = arr;
         }
         /*
@@ -284,7 +277,6 @@ public class UploadUtils {
 
     /**
      * 删除压缩临时产生的文件
-     *
      */
     private void delTempFile() {
         File file = new File(getPath());
@@ -367,7 +359,7 @@ public class UploadUtils {
                                 uploadFileInfo.setPath(path1);
                                 uploadFileInfo.setCompress(true);
                             }
-                            Log.d("compress",path1+"======"+path2);
+                            Log.d("compress", path1 + "======" + path2);
                         }
                     }
 
@@ -379,9 +371,9 @@ public class UploadUtils {
         return fileInfos;
     }
 
-//临时文件夹
+    //临时文件夹
     private String getPath() {
-        String path = Environment.getExternalStorageDirectory() + "/temp/image/";
+        String path = mContext.getCacheDir() + "/temp/image/";
         File file = new File(path);
         if (file.mkdirs()) {
             return path;
@@ -392,22 +384,19 @@ public class UploadUtils {
     private class MyAsyncTask extends AsyncTask {
         private List<UploadFileInfo> totalList;
         private boolean isCompress;
-        private int maxSize;
         private int uploadType;
         private String uploadUrl;
 
-        private MyAsyncTask(int uploadType, List<UploadFileInfo> totalList, boolean isCompress, int maxSize) {
+        private MyAsyncTask(int uploadType, List<UploadFileInfo> totalList, boolean isCompress) {
             this.uploadType = uploadType;
             this.totalList = totalList;
             this.isCompress = isCompress;
-            this.maxSize = maxSize;
         }
 
-        private MyAsyncTask(int uploadType, final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress, int maxSize) {
+        private MyAsyncTask(int uploadType, final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
             this.uploadType = uploadType;
             this.totalList = totalList;
             this.isCompress = isCompress;
-            this.maxSize = maxSize;
             this.uploadUrl = uploadUrl;
         }
 
@@ -422,7 +411,7 @@ public class UploadUtils {
             //doInBackground方法内部执行后台任务,不可在此方法内修改UI
             if (uploadType == OKHTTP_TYPE) {
                 //okhttp上传
-                uploadAndCompressByOkhttp(OKHTTP_TYPE, totalList, uploadUrl, isCompress, maxSize);
+                uploadAndCompressByOkhttp(OKHTTP_TYPE, totalList, uploadUrl, isCompress);
             }
             return null;
         }
