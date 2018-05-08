@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply from: "bintrayUpload.gradle"
 
 android {
     compileSdkVersion 27
@@ -24,9 +25,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-//    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //    implementation 'com.android.support:appcompat-v7:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -34,4 +34,5 @@ dependencies {
     implementation dep.gson
     implementation dep.supportV7
     implementation dep.exif
+    implementation project(':okdownload')
 }

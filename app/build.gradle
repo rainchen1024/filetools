@@ -36,10 +36,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //文件工具类
     //    implementation 'com.github.rainchen1024:filetools:v1.0.0'
-    implementation project(':filetools')
     //    implementation 'com.android.support:design:27.1.1'
     //    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation project(':okdownload')
     implementation dep.kotlin
     //noinspection GradleDependency source code is not available on 26
     implementation dep.supportDesign
@@ -64,6 +62,8 @@ dependencies {
     implementation dep.kotlinxCoroutines
     implementation dep.supportConstraintLayout
     testImplementation dep.junit
+    //    implementation 'com.rainchen.filetools:filetools:1.1.0'
+    implementation project(':filetools')
 }
 repositories {
     mavenCentral()
