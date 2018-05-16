@@ -18,7 +18,7 @@ package com.rainchen.filetoolstest.download.comprehensive.multiple;
 
 import android.support.annotation.Nullable;
 
-import com.liulishuo.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.DownloadTask;
 import com.rainchen.filetoolstest.download.comprehensive.single.SingleTaskUtil;
 
 

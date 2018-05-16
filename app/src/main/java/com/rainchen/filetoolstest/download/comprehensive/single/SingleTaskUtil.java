@@ -20,10 +20,10 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.widget.TextView;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.core.Util;
-import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.core.Util;
+import com.rainchen.filetools.okdownload.core.breakpoint.BlockInfo;
+import com.rainchen.filetools.okdownload.core.breakpoint.BreakpointInfo;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.util.ProgressUtil;
 

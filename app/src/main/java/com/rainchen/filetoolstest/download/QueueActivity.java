@@ -26,10 +26,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.liulishuo.okdownload.DownloadContext;
-import com.liulishuo.okdownload.DownloadContextListener;
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.core.cause.EndCause;
+import com.rainchen.filetools.okdownload.DownloadContext;
+import com.rainchen.filetools.okdownload.DownloadContextListener;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.core.cause.EndCause;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.base.BaseSampleActivity;
 import com.rainchen.filetoolstest.download.util.queue.QueueController;

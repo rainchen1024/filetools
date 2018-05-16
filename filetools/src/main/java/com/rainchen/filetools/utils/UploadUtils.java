@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.rainchen.filetools.bean.UploadFileInfo;
 import com.rainchen.filetools.upload.helper.ProgressHelper;
-import com.rainchen.filetools.upload.listener.ProgressListener;
 import com.rainchen.filetools.utils.compress.ImgCompress;
 import com.rainchen.filetools.utils.compress.OnCompressListener;
 
@@ -43,16 +42,22 @@ import okhttp3.Response;
 
 public class UploadUtils {
 
-    private static final int UPLOAD_SUCCESS = 0;
-    private static final int UPLOAD_FAILED = 1;
-    private static final int UPLOAD_PROCESS = 2;
-    public static final int ALIYUN_TYPE = 0x00;
-    public static final int OKHTTP_TYPE = 0x01;
+    private final int ALIYUN_TYPE = 0x00;
+    private final int OKHTTP_TYPE = 0x01;
+    private final int COMPRESS_SUCCESS = 0x02;
+    private final int COMPRESS_FAILED = 0x03;
+    private final int UPLOAD_SUCCESS = 0x004;
+    private final int UPLOAD_FAILED = 0x005;
+    private final int UPLOAD_PROCESS = 0x006;
+    private final int UPLOAD_START = 0x007;
     private int uploadSize;
     private int failSize;
     private long totalSize;
     private MyHandler handler = new MyHandler(this);
     private Context mContext;
+    private List<UploadFileInfo> mTotalList;//上传文件的信息
+    private String mUploadUrl;//文件服务器地址
+    private boolean mIsCompress;//是否压缩（图片）
 
     private static class MyHandler extends Handler {
         private final WeakReference<UploadUtils> mUploadUtils;
@@ -73,15 +78,17 @@ public class UploadUtils {
     private void toDoMsg(Message msg) {
         switch (msg.what) {
             case UPLOAD_SUCCESS:
-                List<UploadFileInfo> totalList = (List<UploadFileInfo>) msg.obj;
-                mOnUploadListener.onUploadSuccess(totalList);
-//                delTempFile();
+//                List<UploadFileInfo> totalList = (List<UploadFileInfo>) msg.obj;
+                mOnUploadListener.onUploadSuccess(mTotalList);
+                delTempFile();
+                release();
                 break;
 
             case UPLOAD_FAILED:
                 Exception e = (Exception) msg.obj;
                 mOnUploadListener.onUploadFail(e);
                 delTempFile();
+                release();
                 break;
 
             case UPLOAD_PROCESS:
@@ -89,13 +96,27 @@ public class UploadUtils {
                 Log.d("UploadUtils", "handler..." + curSize + "/" + totalSize);
                 mOnUploadListener.onUploadProcess(curSize, totalSize);
                 break;
+            case UPLOAD_START:
+                if (mIsCompress) {
+                    compress();
+                } else {
+                    uploadAsync();
+                }
+                break;
+            case COMPRESS_SUCCESS:
+                uploadAsync();
+                break;
+            case COMPRESS_FAILED:
+                release();
+                break;
             default:
                 break;
         }
     }
 
 
-    public UploadUtils(Context context,OnUploadListener mOnUploadListener) {
+
+    public UploadUtils(Context context, OnUploadListener mOnUploadListener) {
         this.mContext = context;
         this.mOnUploadListener = mOnUploadListener;
     }
@@ -137,33 +158,41 @@ public class UploadUtils {
      * @param uploadUrl  uploadUrl上传服务器的地址
      * @param totalList  本地文件信息封装
      * @param isCompress 是否启用压缩默认不启用（false）
-     *                   <p>
-     *                   <p>
-     *                   <p>
-     *                   非阿里云oss  基于okhttp3实现
-     *                   自定义压缩单个文件大小
+     * <p>
+     * <p>
+     * <p>
+     * 非阿里云oss  基于okhttp3实现
+     * 自定义压缩单个文件大小
      */
-    private void uploadFilesByOkHttp(final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
+
+
+    private void uploadFilesByOkHttp(List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
         //统计下载的个数
         uploadSize = 0;
         failSize = 0;
         if (totalList == null || totalList.size() == 0) {
-            throw new NullPointerException("totalList not null and totalList.size()!=0");
+            throw new NullPointerException("totalList is null or totalList.size() == 0");
         } else {
-            MyAsyncTask myAsyncTask = new MyAsyncTask(OKHTTP_TYPE, totalList, uploadUrl, isCompress);
-            myAsyncTask.execute();
-
+            this.mTotalList = totalList;
+            this.mUploadUrl = uploadUrl;
+            this.mIsCompress = isCompress;
+            handler.obtainMessage(UPLOAD_START).sendToTarget();
         }
 
     }
 
+    /*
+     * 异步上传
+     * */
+    private void uploadAsync() {
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(this::uploadByOkhttp);
+    }
+
     /**
-     * @param uploadUrl  uploadUrl上传服务器的地址
-     * @param arr        本地文件信息封装
-     * @param isCompress 是否启用压缩默认不启用（false）
+     * 表单的封装
      */
-    private synchronized void uploadAndCompressByOkhttp(int type, final List<UploadFileInfo> arr, String uploadUrl, final boolean isCompress) {
-        final int size = arr.size();
+    private synchronized void uploadByOkhttp() {
+        final int size = mTotalList.size();
         OkHttpClient client = new OkHttpClient.Builder()
                 //设置超时，不设置可能会报异常
                 .connectTimeout(5000, TimeUnit.MILLISECONDS).readTimeout(10000, TimeUnit
@@ -171,14 +200,6 @@ public class UploadUtils {
         //构造上传请求，类似web表单
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody
                 .FORM).addFormDataPart("os", "android");
-//        final String[] tempPathArr = new String[size];
-        final List<UploadFileInfo> totalList;
-        //是否压缩
-        if (isCompress) {
-            totalList = compress(arr);
-        } else {
-            totalList = arr;
-        }
         /*
          * 表单封装
          * 以文件名字作为key（file.getName()）
@@ -186,7 +207,7 @@ public class UploadUtils {
          * */
         for (int i = 0; i < size; i++) {
             File file;
-            UploadFileInfo uploadFileInfo = totalList.get(i);
+            UploadFileInfo uploadFileInfo = mTotalList.get(i);
             String path = uploadFileInfo.getPath();
             String url = uploadFileInfo.getUrl();
             //兼容修改页面的上传（只要UploadFileInfo里的path不为空的话就代表是修改后上传的）
@@ -203,7 +224,7 @@ public class UploadUtils {
 
         }
         if (uploadSize == size) {
-            handler.obtainMessage(UPLOAD_SUCCESS, totalList).sendToTarget();
+            handler.obtainMessage(UPLOAD_SUCCESS).sendToTarget();
             return;
         } else if (failSize > 0) {
             handler.obtainMessage(UPLOAD_FAILED, new Exception("upload failed")).sendToTarget();
@@ -212,15 +233,12 @@ public class UploadUtils {
 
         MultipartBody requestBody = builder.build();
         //进行包装，使其支持进度回调
-        Request request = new Request.Builder().url(uploadUrl).post(ProgressHelper
-                .addProgressRequestListener(requestBody, new ProgressListener() {
-                    @Override
-                    public void onProgress(long currentBytes, long contentLength, boolean done) {
-                        //这个是ui线程回调，可直接操作UI
-                        UploadUtils.this.totalSize = contentLength;
-                        Log.d("UploadUtils", "uploading..." + currentBytes + "/" + totalSize);
-                        handler.obtainMessage(UPLOAD_PROCESS, currentBytes).sendToTarget();
-                    }
+        Request request = new Request.Builder().url(mUploadUrl).post(ProgressHelper
+                .addProgressRequestListener(requestBody, (currentBytes, contentLength, done) -> {
+                    //这个是ui线程回调，可直接操作UI
+                    UploadUtils.this.totalSize = contentLength;
+                    Log.d("UploadUtils", "uploading..." + currentBytes + "/" + totalSize);
+                    handler.obtainMessage(UPLOAD_PROCESS, currentBytes).sendToTarget();
                 })).build();
         //开始请求
         client.newCall(request).enqueue(new Callback() {
@@ -239,7 +257,7 @@ public class UploadUtils {
                     JSONArray data = jsonObject.optJSONArray("data");
                     if (data != null && data.length() > 0) {
                         for (int i = 0; i < data.length(); i++) {
-                            updateFileInfo(data, i, totalList);
+                            updateFileInfo(data, i, mTotalList);
                         }
                     }
                 } catch (Exception e) {
@@ -247,7 +265,7 @@ public class UploadUtils {
                     handler.obtainMessage(UPLOAD_FAILED, e).sendToTarget();
                 }
                 if (uploadSize == size) {
-                    handler.obtainMessage(UPLOAD_SUCCESS, totalList).sendToTarget();
+                    handler.obtainMessage(UPLOAD_SUCCESS).sendToTarget();
                 } else {
                     handler.obtainMessage(UPLOAD_FAILED, new Exception("upload failed")).sendToTarget();
                 }
@@ -329,9 +347,9 @@ public class UploadUtils {
     /**
      * 图片压缩
      */
-    private List<UploadFileInfo> compress(final List<UploadFileInfo> fileInfos) {
+    private void compress() {
         List<UploadFileInfo> temp = new ArrayList<>();
-        for (UploadFileInfo fileInfo : fileInfos) {
+        for (UploadFileInfo fileInfo : mTotalList) {
             if (!TextUtils.isEmpty(fileInfo.getPath())) {
                 temp.add(fileInfo);
             }
@@ -347,12 +365,12 @@ public class UploadUtils {
 
                     @Override
                     public void onSuccess(File file) {
-                        for (int i = 0; i < fileInfos.size(); i++) {
+                        for (int i = 0; i < mTotalList.size(); i++) {
                             //压缩后的文件
                             String path1 = file.getPath();
                             String name1 = path1.substring(path1.lastIndexOf(File.separator) + 1);
                             //源文件
-                            UploadFileInfo uploadFileInfo = fileInfos.get(i);
+                            UploadFileInfo uploadFileInfo = mTotalList.get(i);
                             String path2 = uploadFileInfo.getPath();
                             String name2 = path2.substring(path2.lastIndexOf(File.separator) + 1);
                             if (name1.equals(name2)) {
@@ -361,19 +379,20 @@ public class UploadUtils {
                             }
                             Log.d("compress", path1 + "======" + path2);
                         }
+                        handler.obtainMessage(COMPRESS_SUCCESS).sendToTarget();
                     }
 
 
                     @Override
                     public void onError(Throwable e) {
+                        handler.obtainMessage(COMPRESS_SUCCESS, e).sendToTarget();
                     }
                 }).launchOnUiThread();
-        return fileInfos;
     }
 
     //临时文件夹
     private String getPath() {
-        String path = mContext.getCacheDir() + "/temp/image/";
+        String path = mContext.getExternalCacheDir() + "/temp/image/";
         File file = new File(path);
         if (file.mkdirs()) {
             return path;
@@ -381,60 +400,6 @@ public class UploadUtils {
         return path;
     }
 
-    private class MyAsyncTask extends AsyncTask {
-        private List<UploadFileInfo> totalList;
-        private boolean isCompress;
-        private int uploadType;
-        private String uploadUrl;
-
-        private MyAsyncTask(int uploadType, List<UploadFileInfo> totalList, boolean isCompress) {
-            this.uploadType = uploadType;
-            this.totalList = totalList;
-            this.isCompress = isCompress;
-        }
-
-        private MyAsyncTask(int uploadType, final List<UploadFileInfo> totalList, String uploadUrl, boolean isCompress) {
-            this.uploadType = uploadType;
-            this.totalList = totalList;
-            this.isCompress = isCompress;
-            this.uploadUrl = uploadUrl;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            //onPreExecute方法用于在执行后台任务前做一些UI操作
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Object[] params) {
-            //doInBackground方法内部执行后台任务,不可在此方法内修改UI
-            if (uploadType == OKHTTP_TYPE) {
-                //okhttp上传
-                uploadAndCompressByOkhttp(OKHTTP_TYPE, totalList, uploadUrl, isCompress);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Object[] values) {
-            //onProgressUpdate方法用于更新进度信息
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            //onPostExecute方法用于在执行完后台任务后更新UI,显示结果
-            super.onPostExecute(o);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            //onCancelled方法用于在取消执行中的任务时更改UI
-            super.onCancelled();
-        }
-    }
 
     //设置接口回调
     private OnUploadListener mOnUploadListener;
@@ -452,5 +417,6 @@ public class UploadUtils {
         //移除所有的callback和messages
         handler.removeCallbacksAndMessages(null);
         handler = null;
+        mTotalList = null;
     }
 }

@@ -18,7 +18,7 @@ package com.rainchen.filetoolstest.download.comprehensive;
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import com.liulishuo.okdownload.UnifiedListenerManager
+import com.rainchen.filetools.okdownload.UnifiedListenerManager
 import com.rainchen.filetoolstest.R
 import com.rainchen.filetoolstest.download.base.BaseSampleActivity
 import com.rainchen.filetoolstest.download.comprehensive.multiple.MultipleTaskFragment

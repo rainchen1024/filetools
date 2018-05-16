@@ -28,15 +28,15 @@ import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.TextView;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.StatusUtil;
-import com.liulishuo.okdownload.UnifiedListenerManager;
+import com.rainchen.filetools.okdownload.DownloadListener;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.StatusUtil;
+import com.rainchen.filetools.okdownload.UnifiedListenerManager;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.base.BaseSampleActivity;
 import com.rainchen.filetoolstest.download.comprehensive.single.SingleTaskUtil;
 import com.rainchen.filetoolstest.download.util.DemoUtil;
 import com.rainchen.filetoolstest.download.util.NotificationSampleListener;
-import com.liulishuo.okdownload.DownloadListener;
 
 public class NotificationActivity extends BaseSampleActivity {
 

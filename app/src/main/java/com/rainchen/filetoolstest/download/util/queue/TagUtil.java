@@ -18,7 +18,8 @@ package com.rainchen.filetoolstest.download.util.queue;
 
 import android.support.annotation.Nullable;
 
-import com.liulishuo.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.DownloadTask;
+
 
 class TagUtil {
     private static final int KEY_STATUS = 0;

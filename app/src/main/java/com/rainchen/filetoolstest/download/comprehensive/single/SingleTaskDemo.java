@@ -19,11 +19,11 @@ package com.rainchen.filetoolstest.download.comprehensive.single;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.OkDownload;
-import com.liulishuo.okdownload.StatusUtil;
-import com.liulishuo.okdownload.UnifiedListenerManager;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.OkDownload;
+import com.rainchen.filetools.okdownload.StatusUtil;
+import com.rainchen.filetools.okdownload.UnifiedListenerManager;
+import com.rainchen.filetools.okdownload.core.breakpoint.BreakpointInfo;
 import com.rainchen.filetoolstest.download.util.DemoUtil;
 
 import java.io.File;

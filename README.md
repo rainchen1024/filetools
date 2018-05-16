@@ -2,20 +2,12 @@
     这是一个文件操作工具类
 
 ## 一、android集成步骤
-1. 在project下的build.gradle中添加
-```java
-  allprojects {
-    repositories {
-     ...
-     maven { url 'https://jitpack.io' }
-    }
-  }
-```
-2. 在app下的build.gradle中添加<br/>
+
+1. 在app下的build.gradle中添加<br/>
 ```java
 dependencies {
       ...
-        compile 'com.github.rainchen1024:filetools:v1.0.0'<br/>
+        implementation 'com.rainchen.filetools:filetools:1.1.0'<br/>
 }
 ```
 ## 二、开发
@@ -120,7 +112,8 @@ private void updateFileInfo(JSONArray data, int i, List<UploadFileInfo> totalLis
         }
 }
 ```
-
+<br/>
+3. 如遇到FileUriExposedException异常[请参考](https://blog.csdn.net/jdsjlzx/article/details/68487013)<br/><br/><br/>
 灵感来源于 <br/>
 [鲁班压缩](https://github.com/Curzibn/Luban)<br/>
 [okdownload](https://github.com/lingochamp/okdownload)

@@ -2,7 +2,7 @@
 apply from: rootProject.file('gradle/dependencies.gradle')
 
 buildscript {
-    ext.kotlin_version = '1.2.40'
+    ext.kotlin_version = '1.2.41'
 
     repositories {
         google()
@@ -24,7 +24,7 @@ allprojects {
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven {url 'http://dl.bintray.com/rainchen/maven'}
+//        maven {url 'http://dl.bintray.com/rainchen/maven'}
     }
 }
 

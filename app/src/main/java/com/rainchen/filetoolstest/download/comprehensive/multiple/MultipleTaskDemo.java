@@ -19,9 +19,8 @@ package com.rainchen.filetoolstest.download.comprehensive.multiple;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.UnifiedListenerManager;
-import com.liulishuo.okdownload.sample.comprehensive.multiple.MultipleTaskViewHolder;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.UnifiedListenerManager;
 
 import java.util.ArrayList;
 import java.util.List;

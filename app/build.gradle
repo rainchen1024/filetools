@@ -62,7 +62,7 @@ dependencies {
     implementation dep.kotlinxCoroutines
     implementation dep.supportConstraintLayout
     testImplementation dep.junit
-    //    implementation 'com.rainchen.filetools:filetools:1.1.0'
+//        implementation 'com.rainchen.filetools:filetools:1.1.3'
     implementation project(':filetools')
 }
 repositories {

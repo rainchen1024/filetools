@@ -58,9 +58,12 @@ public class ImgCompress implements Handler.Callback {
             mTargetDir = getImageCacheDir(context).getAbsolutePath();
         }
 
-        String cacheBuilder = mTargetDir  + path.substring(path.lastIndexOf(File.separator));
-
-        return new File(cacheBuilder);
+        String cacheBuilder = mTargetDir + path.substring(path.lastIndexOf(File.separator));
+        File file = new File(cacheBuilder);
+        if (file.exists()) {
+            file.delete();
+        }
+        return file;
     }
 
     /**
@@ -135,9 +138,10 @@ public class ImgCompress implements Handler.Callback {
             iterator.remove();
         }
     }
-/**
- * 主线程同步压缩
- * */
+
+    /**
+     * 主线程同步压缩
+     */
     private void launchOnUiThread(final Context context) {
         if (mStreamProviders == null || mStreamProviders.size() == 0 && mCompressListener != null) {
             mCompressListener.onError(new NullPointerException("image file cannot be null"));
@@ -198,20 +202,21 @@ public class ImgCompress implements Handler.Callback {
 
         switch (msg.what) {
             case MSG_COMPRESS_START:
-                Log.d("onStart","===== onStart =====");
+                Log.d("onStart", "===== onStart =====");
                 mCompressListener.onStart();
                 break;
             case MSG_COMPRESS_SUCCESS:
                 File file = (File) msg.obj;
-                Log.d("onStart","===== onSuccess =="+(file.isFile()?file.getPath():"file is null"));
+                Log.d("onStart", "===== onSuccess ==" + (file.isFile() ? file.getPath() : "file is null"));
                 mCompressListener.onSuccess(file);
                 break;
             case MSG_COMPRESS_ERROR:
                 Exception e = (Exception) msg.obj;
-                Log.d("onStart","===== onError ====="+e.getMessage());
+                Log.d("onStart", "===== onError =====" + e.getMessage());
                 mCompressListener.onError(e);
                 break;
-                default:break;
+            default:
+                break;
         }
         return false;
     }
@@ -253,11 +258,11 @@ public class ImgCompress implements Handler.Callback {
         }
 
         public Builder load(final String path) {
-            Log.d("load-path",path);
+            Log.d("load-path", path);
             mStreamProviders.add(new InputStreamProvider() {
                 @Override
                 public InputStream open() throws IOException {
-                    if (TextUtils.isEmpty(path)){
+                    if (TextUtils.isEmpty(path)) {
                         return null;
                     }
                     return new FileInputStream(path);
@@ -324,6 +329,7 @@ public class ImgCompress implements Handler.Callback {
         public void launchAsync() {
             build().launchAsync(context);
         }
+
         /**
          * 主线程同步压缩
          */

@@ -22,8 +22,8 @@ import android.util.SparseArray;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.liulishuo.okdownload.SpeedCalculator;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
+import com.rainchen.filetools.okdownload.SpeedCalculator;
+import com.rainchen.filetools.okdownload.core.breakpoint.BreakpointInfo;
 import com.rainchen.filetoolstest.download.util.ProgressUtil;
 
 

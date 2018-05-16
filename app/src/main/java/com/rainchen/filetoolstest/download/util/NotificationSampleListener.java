@@ -27,13 +27,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.SpeedCalculator;
-import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
-import com.liulishuo.okdownload.core.cause.EndCause;
-import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
-import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.SpeedCalculator;
+import com.rainchen.filetools.okdownload.core.breakpoint.BlockInfo;
+import com.rainchen.filetools.okdownload.core.breakpoint.BreakpointInfo;
+import com.rainchen.filetools.okdownload.core.cause.EndCause;
+import com.rainchen.filetools.okdownload.core.listener.DownloadListener4WithSpeed;
+import com.rainchen.filetools.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.rainchen.filetoolstest.R;
 
 import java.util.List;

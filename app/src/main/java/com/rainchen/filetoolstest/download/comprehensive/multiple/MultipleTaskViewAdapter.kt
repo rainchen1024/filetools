@@ -21,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.rainchen.filetoolstest.R
 import com.rainchen.filetoolstest.download.comprehensive.multiple.MultipleTaskDemo
+import com.rainchen.filetoolstest.download.comprehensive.multiple.MultipleTaskViewHolder
 
 class MultipleTaskViewAdapter(private val demo: MultipleTaskDemo) : RecyclerView.Adapter<MultipleTaskViewHolder>() {
 

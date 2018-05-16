@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.liulishuo.okdownload.sample.comprehensive.multiple
+package com.rainchen.filetoolstest.download.comprehensive.multiple;
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
-import com.liulishuo.okdownload.DownloadTask
+import com.rainchen.filetools.okdownload.DownloadTask
 import com.rainchen.filetoolstest.R
 import com.rainchen.filetoolstest.download.comprehensive.multiple.MultipleDownloadListener
 

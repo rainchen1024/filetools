@@ -21,13 +21,13 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.StatusUtil;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
-import com.liulishuo.okdownload.core.cause.EndCause;
-import com.liulishuo.okdownload.core.cause.ResumeFailedCause;
-import com.liulishuo.okdownload.core.listener.DownloadListener1;
-import com.liulishuo.okdownload.core.listener.assist.Listener1Assist;
+import com.rainchen.filetools.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.StatusUtil;
+import com.rainchen.filetools.okdownload.core.breakpoint.BreakpointInfo;
+import com.rainchen.filetools.okdownload.core.cause.EndCause;
+import com.rainchen.filetools.okdownload.core.cause.ResumeFailedCause;
+import com.rainchen.filetools.okdownload.core.listener.DownloadListener1;
+import com.rainchen.filetools.okdownload.core.listener.assist.Listener1Assist;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.util.ProgressUtil;
 

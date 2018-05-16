@@ -22,6 +22,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -34,5 +38,6 @@ dependencies {
     implementation dep.gson
     implementation dep.supportV7
     implementation dep.exif
-    implementation project(':okdownload')
+    implementation dep.supportAnnotations
+    //    implementation project(':okdownload')
 }

@@ -20,7 +20,7 @@ package com.rainchen.filetoolstest.download;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.liulishuo.okdownload.core.Util;
+import com.rainchen.filetools.okdownload.core.Util;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.base.BaseListActivity;
 

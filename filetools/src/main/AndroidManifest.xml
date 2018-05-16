@@ -11,5 +11,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"/>
+        android:theme="@style/AppTheme">
+
+        <provider
+            android:name="com.rainchen.filetools.okdownload.OkDownloadProvider"
+            android:authorities="${applicationId}.com.rainchen.filetools"
+            android:exported="false"/>
+    </application>
 </manifest>

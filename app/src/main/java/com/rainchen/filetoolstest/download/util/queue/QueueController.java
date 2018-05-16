@@ -21,9 +21,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.SeekBar;
 
-import com.liulishuo.okdownload.DownloadContext;
-import com.liulishuo.okdownload.DownloadContextListener;
-import com.liulishuo.okdownload.DownloadTask;
+import com.rainchen.filetools.okdownload.DownloadContext;
+import com.rainchen.filetools.okdownload.DownloadContextListener;
+import com.rainchen.filetools.okdownload.DownloadTask;
 import com.rainchen.filetoolstest.R;
 import com.rainchen.filetoolstest.download.util.DemoUtil;
 
