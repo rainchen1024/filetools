@@ -7,7 +7,7 @@
 ```java
 dependencies {
       ...
-        implementation 'com.rainchen.filetools:filetools:1.1.5'<br/>
+        implementation 'com.rainchen.filetools:filetools:1.1.5'
 }
 ```
 ## 二、开发
