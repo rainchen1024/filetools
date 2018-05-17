@@ -1,7 +1,7 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 // This is the library version used when deploying the artifact
-version = "1.1.4"
+version = "1.1.5"
 
 def siteUrl = 'https://github.com/rainchen1024/filetools'      // 项目的主页
 def gitUrl = 'https://github.com/rainchen1024/filetools.git'   // Git仓库的url
