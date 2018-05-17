@@ -105,8 +105,5 @@ public class UploadActivity extends AppCompatActivity implements UploadUtils.OnU
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mUploadUtils != null) {
-            mUploadUtils.release();
-        }
     }
 }

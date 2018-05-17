@@ -107,7 +107,7 @@ public class UploadUtils {
                 uploadAsync();
                 break;
             case COMPRESS_FAILED:
-                release();
+//                release();
                 break;
             default:
                 break;
@@ -385,7 +385,7 @@ public class UploadUtils {
 
                     @Override
                     public void onError(Throwable e) {
-                        handler.obtainMessage(COMPRESS_SUCCESS, e).sendToTarget();
+                        handler.obtainMessage(UPLOAD_FAILED, e).sendToTarget();
                     }
                 }).launchOnUiThread();
     }
@@ -413,10 +413,13 @@ public class UploadUtils {
     }
 
     //释放资源
-    public void release() {
+    private void release() {
         //移除所有的callback和messages
-        handler.removeCallbacksAndMessages(null);
+        if (handler!=null) {
+            handler.removeCallbacksAndMessages(null);
+        }
         handler = null;
         mTotalList = null;
+        mIsCompress = false;
     }
 }
